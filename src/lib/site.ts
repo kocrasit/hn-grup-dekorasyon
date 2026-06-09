@@ -17,7 +17,7 @@ export const site = {
   phone: "0552 259 55 53",
   phoneHref: "tel:+905522595553",
   whatsapp: "905522595553", // ülke kodu + numara, sadece rakam
-  email: "info@hngrupdekorasyon.com",
+  email: "hngrupdekorasyon@gmail.com",
   address:
     "Aydınlı Mah. Aydınlı Yolu Cad. Beyoğlu Sanayi Sitesi C Blok No: 34, Tuzla / İstanbul",
   mapsQuery:

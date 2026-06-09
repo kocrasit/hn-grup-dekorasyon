@@ -38,22 +38,67 @@ export default function ContactForm() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setStatus("loading");
     setErrors({});
 
     const form = e.currentTarget;
-    const payload = Object.fromEntries(new FormData(form).entries());
+    const f = new FormData(form);
+    const get = (k: string) => String(f.get(k) ?? "").trim();
+
+    const name = get("name");
+    const phone = get("phone");
+    const email = get("email");
+    const message = get("message");
+    const service = get("service");
+    const company = get("company"); // honeypot
+
+    // Bot tuzağı: gizli alan doluysa sessizce başarı göster
+    if (company) {
+      setStatus("success");
+      form.reset();
+      return;
+    }
+
+    // İstemci tarafı doğrulama
+    const fieldErrors: FieldErrors = {};
+    if (name.length < 2) fieldErrors.name = "Lütfen adınızı girin.";
+    if (!/^[0-9+()\s-]{7,}$/.test(phone)) fieldErrors.phone = "Geçerli bir telefon girin.";
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      fieldErrors.email = "Geçerli bir e-posta girin.";
+    if (message.length < 10) fieldErrors.message = "Lütfen kısaca projenizi anlatın.";
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      setStatus("error");
+      return;
+    }
+
+    setStatus("loading");
+
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      console.error("Web3Forms access key tanımsız (NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY).");
+      setStatus("error");
+      return;
+    }
 
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `Yeni Teklif Talebi — ${name}`,
+          from_name: "HN Grup Dekorasyon Web Sitesi",
+          name,
+          phone,
+          email: email || "Belirtilmedi",
+          "İlgilenilen Hizmet": service || "Belirtilmedi",
+          message,
+        }),
       });
       const json = await res.json();
 
-      if (!res.ok) {
-        setErrors(json.errors ?? {});
+      if (!json.success) {
         setStatus("error");
         return;
       }
