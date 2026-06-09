@@ -8,7 +8,7 @@ export const site = {
   tagline: "Parke · Fayans · Çatı · Anahtar Teslim Tadilat",
   description:
     "HN Grup Dekorasyon; ev ve dükkânlarınız için zeminden çatıya parke, fayans, çatı, boya ve anahtar teslim tadilat işleri yapar. 18 yılı aşkın saha deneyimiyle, tüm süreci tek elden yönetiyoruz.",
-  url: "https://hngrupdekorasyon.com",
+  url: "https://hn-grup-dekorasyon.com",
 
   // Gerçek deneyim — site genelinde güven göstergesi
   expertiseYears: "18+",
